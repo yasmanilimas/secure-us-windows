@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, startTransition } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,9 @@ const Admin = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/auth');
+    startTransition(() => {
+      navigate('/auth');
+    });
   };
 
   const navItems = [
@@ -43,9 +45,9 @@ const Admin = () => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="shrink-0">
-              <img 
-                src={logoPrimary} 
-                alt="Powerful Impact Windows" 
+              <img
+                src={logoPrimary}
+                alt="Powerful Impact Windows"
                 className="h-10 w-auto"
               />
             </Link>
@@ -54,7 +56,7 @@ const Admin = () => {
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Link to="/">
               <Button variant="ghost" size="lg" className="gap-2 h-12">
@@ -62,7 +64,7 @@ const Admin = () => {
                 <span className="hidden sm:inline">{t('admin.home')}</span>
               </Button>
             </Link>
-            <Button 
+            <Button
               onClick={handleSignOut}
               variant="outline"
               size="lg"
@@ -106,7 +108,7 @@ const Admin = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         {currentView === 'leads' && <LeadsList />}
-        
+
         {currentView === 'dashboard' && <Dashboard />}
 
         {currentView === 'estimates' && <EstimatesList />}

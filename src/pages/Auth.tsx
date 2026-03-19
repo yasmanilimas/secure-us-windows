@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  
+
   const { signIn, signUp, user, isAdmin } = useAuth();
   const { t } = useLanguage();
   const { toast } = useToast();
@@ -30,17 +30,15 @@ const Auth = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      if (isAdmin) {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+      startTransition(() => {
+        navigate(isAdmin ? '/admin' : '/', { replace: true });
+      });
     }
   }, [user, isAdmin, navigate]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     try {
       emailSchema.parse(email);
     } catch (e) {
@@ -48,7 +46,7 @@ const Auth = () => {
         newErrors.email = e.errors[0]?.message;
       }
     }
-    
+
     try {
       passwordSchema.parse(password);
     } catch (e) {
@@ -56,33 +54,33 @@ const Auth = () => {
         newErrors.password = e.errors[0]?.message;
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
 
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
-        
+
         if (error) {
           let message = t('auth.error.generic');
-          
+
           if (error.message.includes('Invalid login credentials')) {
             message = t('auth.error.invalidCredentials');
           } else if (error.message.includes('Email not confirmed')) {
             message = t('auth.error.emailNotConfirmed');
           }
-          
+
           toast({
             title: t('auth.error.title'),
             description: message,
@@ -90,21 +88,21 @@ const Auth = () => {
           });
           return;
         }
-        
+
         toast({
           title: t('auth.success.loginTitle'),
           description: t('auth.success.loginDesc'),
         });
       } else {
         const { error } = await signUp(email, password, fullName);
-        
+
         if (error) {
           let message = t('auth.error.generic');
-          
+
           if (error.message.includes('User already registered')) {
             message = t('auth.error.alreadyRegistered');
           }
-          
+
           toast({
             title: t('auth.error.title'),
             description: message,
@@ -112,12 +110,12 @@ const Auth = () => {
           });
           return;
         }
-        
+
         toast({
           title: t('auth.success.signupTitle'),
           description: t('auth.success.signupDesc'),
         });
-        
+
         // Switch to login after successful signup
         setIsLogin(true);
         setPassword('');
@@ -136,8 +134,8 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {/* Back to home */}
-      <a 
-        href="/" 
+      <a
+        href="/"
         className="absolute top-4 left-4 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -147,9 +145,9 @@ const Auth = () => {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <img 
-            src={logoPrimary} 
-            alt="Powerful Impact Windows" 
+          <img
+            src={logoPrimary}
+            alt="Powerful Impact Windows"
             className="h-16 w-auto mx-auto mb-4"
           />
           <h1 className="text-2xl font-anton text-foreground">
