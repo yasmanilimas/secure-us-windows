@@ -25,7 +25,20 @@ class AppErrorBoundary extends React.Component<React.PropsWithChildren, AppError
     window.removeEventListener('unhandledrejection', this.handleUnhandledRejection);
   }
 
-  handleUnhandledRejection = () => {
+  handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    const reason = event.reason;
+    const message = reason instanceof Error ? reason.message : String(reason ?? '');
+
+    // Ignorar advertencias no fatales para no tumbar toda la UI
+    if (
+      message.includes('A component suspended while responding to synchronous input') ||
+      message.includes('ResizeObserver loop limit exceeded') ||
+      message.includes('AbortError')
+    ) {
+      console.warn('Ignored non-fatal rejection:', message);
+      return;
+    }
+
     this.setState({ hasError: true });
   };
 
