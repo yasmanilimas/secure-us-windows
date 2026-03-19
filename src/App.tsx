@@ -27,23 +27,31 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/estimate" element={<Estimate />} />
-              <Route path="/door-designs" element={<DoorDesigns />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route 
-                path="/admin" 
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <Admin />
-                  </ProtectedRoute>
-                } 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex items-center justify-center bg-background">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
+                </div>
+              }
+            >
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/estimate" element={<Estimate />} />
+                <Route path="/door-designs" element={<DoorDesigns />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <Admin />
+                    </ProtectedRoute>
+                  } 
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
             <WhatsAppButton />
           </BrowserRouter>
         </TooltipProvider>
