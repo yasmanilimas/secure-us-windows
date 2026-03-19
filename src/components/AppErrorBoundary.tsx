@@ -29,17 +29,18 @@ class AppErrorBoundary extends React.Component<React.PropsWithChildren, AppError
     const reason = event.reason;
     const message = reason instanceof Error ? reason.message : String(reason ?? '');
 
-    // Ignorar advertencias no fatales para no tumbar toda la UI
-    if (
-      message.includes('A component suspended while responding to synchronous input') ||
-      message.includes('ResizeObserver loop limit exceeded') ||
-      message.includes('AbortError')
-    ) {
-      console.warn('Ignored non-fatal rejection:', message);
+    const isFatalChunkError =
+      message.includes('ChunkLoadError') ||
+      message.includes('Loading chunk') ||
+      message.includes('Failed to fetch dynamically imported module');
+
+    if (isFatalChunkError) {
+      this.setState({ hasError: true });
       return;
     }
 
-    this.setState({ hasError: true });
+    // No tumbamos toda la app por rechazos asíncronos no fatales (timeouts, abortos, red, etc.)
+    console.warn('Unhandled rejection (non-fatal):', reason);
   };
 
   handleReload = () => {

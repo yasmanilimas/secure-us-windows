@@ -15,14 +15,23 @@ const Hero = () => {
 
   useEffect(() => {
     const fetchBackgrounds = async () => {
-      const { data } = await supabase
-        .from('hero_backgrounds')
-        .select('image_url')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('hero_backgrounds')
+          .select('image_url')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
 
-      if (data && data.length > 0) {
-        setBackgrounds(data.map(b => b.image_url));
+        if (error) {
+          console.warn('Could not load hero backgrounds:', error.message);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          setBackgrounds(data.map((b) => b.image_url));
+        }
+      } catch (error) {
+        console.warn('Could not load hero backgrounds:', error);
       }
     };
 
