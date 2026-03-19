@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
 import AppErrorBoundary from "@/components/AppErrorBoundary";
 import "./index.css";
 
@@ -23,19 +24,13 @@ const renderBootstrapError = () => {
   );
 };
 
-const bootstrap = async () => {
-  try {
-    const { default: App } = await import("./App.tsx");
-
-    root.render(
-      <AppErrorBoundary>
-        <App />
-      </AppErrorBoundary>
-    );
-  } catch (error) {
-    console.error("App bootstrap failed:", error);
-    renderBootstrapError();
-  }
-};
-
-void bootstrap();
+try {
+  root.render(
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>
+  );
+} catch (error) {
+  console.error("App render failed:", error);
+  renderBootstrapError();
+}
