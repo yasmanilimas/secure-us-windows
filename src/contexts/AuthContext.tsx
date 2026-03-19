@@ -59,16 +59,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        checkAdminRole(session.user.id);
+    const initializeSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        const currentSession = data.session;
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+
+        if (currentSession?.user) {
+          await checkAdminRole(currentSession.user.id);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error loading auth session:', error);
+
+        // Recuperación defensiva ante storage/token corrupto en dominios externos
+        try {
+          Object.keys(localStorage)
+            .filter((key) => key.includes('auth-token') || key.startsWith('sb-'))
+            .forEach((key) => localStorage.removeItem(key));
+        } catch (storageError) {
+          console.warn('Could not clean auth storage:', storageError);
+        }
+
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
-    });
+    };
+
+    initializeSession();
 
     return () => subscription.unsubscribe();
   }, []);
