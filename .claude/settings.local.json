@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(ls \"C:\\\\Users\\\\Mario Diaz\\\\Downloads\\\\WEBS\\\\secure-us-windows-main\\\\node_modules\\\\.bin\"\" 2>&1 | head -20; echo \"---\"; ls \"C:UsersMario DiazDownloadsWEBSsecure-us-windows-mainnode_modules \")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(pkill -f \"node proxy.js\")",
+      "Bash(netstat -ano)"
+    ]
+  }
+}
