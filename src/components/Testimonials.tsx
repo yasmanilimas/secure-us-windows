@@ -61,45 +61,49 @@ const Testimonials = () => {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="bg-card border-border hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <Quote className="w-8 h-8 text-primary/30 mb-4" />
-                
-                <p className="text-foreground mb-6 leading-relaxed">
-                  "{language === 'en' ? testimonial.testimonial : testimonial.testimonial_es}"
-                </p>
+          {testimonials.map((testimonial) => {
+            const safeRating = Math.max(0, Math.min(5, Math.floor(Number(testimonial.rating) || 0)));
 
-                <div className="flex items-center gap-4">
-                  {testimonial.client_photo_url ? (
-                    <img
-                      src={testimonial.client_photo_url}
-                      alt={testimonial.client_name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                      <User className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                  )}
+            return (
+              <Card key={testimonial.id} className="bg-card border-border hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <Quote className="w-8 h-8 text-primary/30 mb-4" />
                   
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground">
-                      {language === 'en' ? testimonial.client_name : testimonial.client_name_es}
-                    </h4>
-                    {testimonial.location && (
-                      <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                  <p className="text-foreground mb-6 leading-relaxed">
+                    "{language === 'en' ? testimonial.testimonial : testimonial.testimonial_es}"
+                  </p>
+
+                  <div className="flex items-center gap-4">
+                    {testimonial.client_photo_url ? (
+                      <img
+                        src={testimonial.client_photo_url}
+                        alt={testimonial.client_name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                        <User className="w-5 h-5 text-muted-foreground" />
+                      </div>
                     )}
-                    <div className="flex gap-0.5 mt-1">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      ))}
+                    
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-foreground">
+                        {language === 'en' ? testimonial.client_name : testimonial.client_name_es}
+                      </h4>
+                      {testimonial.location && (
+                        <p className="text-sm text-muted-foreground">{testimonial.location}</p>
+                      )}
+                      <div className="flex gap-0.5 mt-1">
+                        {Array.from({ length: safeRating }).map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-accent text-accent" />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>
