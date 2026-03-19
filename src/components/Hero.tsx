@@ -96,17 +96,12 @@ const Hero = () => {
               {t('hero.cta.estimate')}
             </WindowButton>
             
-            <div className="relative">
-              <WindowButton 
-                icon={<DoorOpen className="w-5 h-5" />}
-                disabled
-              >
-                {t('hero.cta.doorDesigns')}
-              </WindowButton>
-              <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                {t('hero.cta.comingSoon')}
-              </span>
-            </div>
+            <WindowButton 
+              to="/door-designs"
+              icon={<DoorOpen className="w-5 h-5" />}
+            >
+              {t('hero.cta.doorDesigns')}
+            </WindowButton>
           </nav>
 
           {/* Owner Quote */}
