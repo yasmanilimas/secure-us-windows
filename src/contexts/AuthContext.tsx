@@ -155,10 +155,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+const fallbackAuthContext: AuthContextType = {
+  user: null,
+  session: null,
+  loading: false,
+  isAdmin: false,
+  signIn: async () => ({ error: new Error('AuthProvider is not mounted') }),
+  signUp: async () => ({ error: new Error('AuthProvider is not mounted') }),
+  signOut: async () => undefined,
+};
+
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
+
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    console.error('useAuth called outside AuthProvider. Using safe fallback context.');
+    return fallbackAuthContext;
   }
+
   return context;
 };
