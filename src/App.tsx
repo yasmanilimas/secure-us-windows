@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,13 +8,14 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import Index from "./pages/Index";
-import Estimate from "./pages/Estimate";
-import DoorDesigns from "./pages/DoorDesigns";
-import Projects from "./pages/Projects";
-import Auth from "./pages/Auth";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
+
+const Index = lazy(() => import("./pages/Index"));
+const Estimate = lazy(() => import("./pages/Estimate"));
+const DoorDesigns = lazy(() => import("./pages/DoorDesigns"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Admin = lazy(() => import("./pages/Admin"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
