@@ -1,4 +1,3 @@
-import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,14 +7,13 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import WhatsAppButton from "@/components/WhatsAppButton";
-
-const Index = lazy(() => import("./pages/Index"));
-const Estimate = lazy(() => import("./pages/Estimate"));
-const DoorDesigns = lazy(() => import("./pages/DoorDesigns"));
-const Projects = lazy(() => import("./pages/Projects"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Admin = lazy(() => import("./pages/Admin"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+import Index from "./pages/Index";
+import Estimate from "./pages/Estimate";
+import DoorDesigns from "./pages/DoorDesigns";
+import Projects from "./pages/Projects";
+import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -27,31 +25,23 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Suspense
-              fallback={
-                <div className="min-h-screen flex items-center justify-center bg-background">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
-                </div>
-              }
-            >
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/estimate" element={<Estimate />} />
-                <Route path="/door-designs" element={<DoorDesigns />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route 
-                  path="/admin" 
-                  element={
-                    <ProtectedRoute requireAdmin>
-                      <Admin />
-                    </ProtectedRoute>
-                  } 
-                />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/estimate" element={<Estimate />} />
+              <Route path="/door-designs" element={<DoorDesigns />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <Admin />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
             <WhatsAppButton />
           </BrowserRouter>
         </TooltipProvider>
