@@ -75,7 +75,44 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif;background:#f8fafc;color:#0f172a;">
+        <div style="max-width:560px;width:100%;background:#ffffff;border:1px solid #cbd5e1;border-radius:12px;padding:24px;text-align:center;">
+          <h1 style="margin:0 0 10px 0;font-size:28px;line-height:1.2;">Cargando sitio…</h1>
+          <p id="boot-status" style="margin:0;font-size:18px;line-height:1.5;color:#334155;">
+            Si esto tarda más de 10 segundos, recarga la página.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var statusEl = document.getElementById('boot-status');
+        var setMessage = function (msg) {
+          if (statusEl) statusEl.textContent = msg;
+        };
+
+        window.addEventListener('error', function () {
+          setMessage('No se pudo cargar la aplicación. Haz una recarga forzada (Ctrl+F5).');
+        });
+
+        window.addEventListener('unhandledrejection', function () {
+          setMessage('Ocurrió un error al iniciar. Haz una recarga forzada (Ctrl+F5).');
+        });
+
+        setTimeout(function () {
+          setMessage('Si aún no carga, limpia caché del navegador y vuelve a intentar.');
+        }, 10000);
+      })();
+    </script>
+
+    <noscript>
+      <div style="padding:24px;text-align:center;font-family:Arial,sans-serif;">
+        Esta web necesita JavaScript habilitado para funcionar.
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
