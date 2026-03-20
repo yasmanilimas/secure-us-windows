@@ -332,7 +332,7 @@ const EstimateCalculator = ({ isOpen, onClose }: EstimateCalculatorProps) => {
               {currentProducts.map((product) => (
                 <button
                   key={product.key}
-                  onClick={() => setSelectedProduct(product.key)}
+                  onClick={() => { setSelectedProduct(product.key); setStep(2); }}
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     selectedProduct === product.key
                       ? 'border-primary bg-primary/5'
