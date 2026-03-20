@@ -70,6 +70,7 @@ const EstimateCalculator = ({ isOpen, onClose }: EstimateCalculatorProps) => {
   const [screen, setScreen] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [wakeUpCountdown, setWakeUpCountdown] = useState<number | null>(null);
 
   // Get margin from pricing settings
   const marginPercentage = pricingSettings?.margin_percentage ?? 50;
@@ -116,10 +117,27 @@ const EstimateCalculator = ({ isOpen, onClose }: EstimateCalculatorProps) => {
     let pricing: PriceResult;
     let pricingSource: 'api' | 'formula' | 'estimate' = 'estimate';
 
+    // Si el proxy tarda más de 3s → mostrar cuenta regresiva (servidor dormido)
+    let countdown = 50;
+    const wakeTimer = setTimeout(() => {
+      setWakeUpCountdown(countdown);
+      const interval = setInterval(() => {
+        countdown -= 1;
+        if (countdown <= 0) { clearInterval(interval); return; }
+        setWakeUpCountdown(countdown);
+      }, 1000);
+      (wakeTimer as any)._interval = interval;
+    }, 3000);
+
     // 1) Intentar precio real de MrGlass via proxy
     const apiWholesale = await fetchMrGlassPrice({
       productCode, widthInches: w, heightInches: h, frameColor, windZone, glassType,
     });
+
+    // Limpiar cuenta regresiva
+    clearTimeout(wakeTimer);
+    clearInterval((wakeTimer as any)._interval);
+    setWakeUpCountdown(null);
 
     if (apiWholesale !== null) {
       pricing = buildPriceResult(apiWholesale, quantity, marginPercentage, privacy, !!screen, productType === 'window');
@@ -588,19 +606,26 @@ const EstimateCalculator = ({ isOpen, onClose }: EstimateCalculatorProps) => {
                 <ArrowLeft className="w-4 h-4" />
                 {t('calc.back')}
               </Button>
-              <Button onClick={addProduct} disabled={isAddingProduct} className="gap-2">
-                {isAddingProduct ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Cotizando...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4" />
-                    {t('calc.addProduct')}
-                  </>
+              <div className="flex flex-col items-end gap-1">
+                {wakeUpCountdown !== null && (
+                  <p className="text-xs text-amber-600 font-medium animate-pulse">
+                    ⏳ Servidor despertando… {wakeUpCountdown}s
+                  </p>
                 )}
-              </Button>
+                <Button onClick={addProduct} disabled={isAddingProduct} className="gap-2">
+                  {isAddingProduct ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      {wakeUpCountdown !== null ? `Esperando ${wakeUpCountdown}s...` : 'Cotizando...'}
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      {t('calc.addProduct')}
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         )}
