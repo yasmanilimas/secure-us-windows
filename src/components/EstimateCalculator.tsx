@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, Plus, Trash2, ArrowRight, ArrowLeft, MessageCircle, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -71,6 +71,13 @@ const EstimateCalculator = ({ isOpen, onClose }: EstimateCalculatorProps) => {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [wakeUpCountdown, setWakeUpCountdown] = useState<number | null>(null);
+
+  // Avanzar automáticamente a step 2 cuando se selecciona un producto en step 1
+  useEffect(() => {
+    if (selectedProduct && step === 1) {
+      setStep(2);
+    }
+  }, [selectedProduct]);
 
   // Get margin from pricing settings
   const marginPercentage = pricingSettings?.margin_percentage ?? 50;
