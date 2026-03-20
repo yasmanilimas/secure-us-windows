@@ -122,8 +122,11 @@ const SERIES_MAP = {
   MG450:  'mg450s',
   MG600:  'mg600s',
   MG1000: 'mg1000s',
+  MG1100: 'mg1100s',
   MG1500: 'mg1500s',
   MG3000: 'mg3000s',
+  MG3500: 'mg3500s',
+  MG4000: 'mg4000s',
 };
 
 // Claves internas → valores que usa el formulario de MrGlass
