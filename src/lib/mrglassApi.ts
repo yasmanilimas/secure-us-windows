@@ -10,7 +10,7 @@
 
 import { type PriceResult, TAX_RATE } from './pricing-config';
 
-const PROXY_URL = 'http://localhost:3001';
+const PROXY_URL = import.meta.env.VITE_PROXY_URL ?? 'http://localhost:3001';
 
 // Las fórmulas fueron calibradas con precios que ya incluían 50% de margen del instalador.
 // Para obtener el costo wholesale real hay que dividir por (1 + FORMULA_TRAINING_MARGIN).
@@ -105,9 +105,35 @@ export function calcFallbackWholesale(
   // Precio calibrado (Zone 4, White, incluye FORMULA_TRAINING_MARGIN)
   let price = formula(W, H);
 
-  // Recargo de color por pie lineal de perímetro (también ya incluía el margen de entrenamiento)
+  // Correcciones MG200 para anchos no estándar. La fórmula bilineal fue calibrada
+  // exactamente en W=36" (3ft) y W=48" (4ft); todas las correcciones son 0 en esos puntos.
+  if (productCode === 'MG200') {
+    if (W > 3 && W < 4) {
+      // Anchos intermedios 36"–48" (e.g. 40"):
+      // — H ≤ 48": la fórmula sobreestima; corrección parabólica negativa.
+      //   k=-93.0 calibrado con 40"×40" ($351.18) y 40"×48" ($394.07).
+      // — H > 48": la fórmula subestima; corrección positiva proporcional a (H-4).
+      //   k=190.35 calibrado con 40"×60" ($501.65).
+      if (H <= 4) {
+        price += -93.0 * (W - 3) * (4 - W);
+      } else {
+        price += 190.35 * (W - 3) * (4 - W) * (H - 4);
+      }
+    } else if (W < 3) {
+      // Anchos estrechos < 36" (e.g. 24", 30"):
+      // La fórmula subestima significativamente. Corrección cuadrática que da
+      // +$41 wholesale en W=24" y +$28 en W=30", con 0 en W=36".
+      // Calibrado con: 24"×48" ($286.95), 24"×60" ($325.21),
+      //                30"×48" ($319.09), 30"×60" ($401.98).
+      price += -45 * (W - 3) ** 2 - 106.5 * (W - 3);
+    }
+  }
+
+  // Recargo de color por pie lineal de perímetro.
+  // La tasa en FRAME_COLOR_SURCHARGE ya está en términos retail (con margen incluido),
+  // igual que la fórmula base, por lo que NO se multiplica por (1 + FORMULA_TRAINING_MARGIN).
   const perimeter  = 2 * (W + H);
-  const colorExtra = (FRAME_COLOR_SURCHARGE[frameColor] ?? 0) * perimeter * (1 + FORMULA_TRAINING_MARGIN);
+  const colorExtra = (FRAME_COLOR_SURCHARGE[frameColor] ?? 0) * perimeter;
   price += colorExtra;
 
   // Ajuste de zona (la fórmula es Zone 4)
