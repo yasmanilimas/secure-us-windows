@@ -10,7 +10,9 @@
 
 import { type PriceResult, TAX_RATE } from './pricing-config';
 
-const PROXY_URL = import.meta.env.VITE_PROXY_URL ?? 'http://localhost:3001';
+const PROXY_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+  ? 'https://secure-us-windows.onrender.com'
+  : 'http://localhost:3001';
 
 // Las fórmulas fueron calibradas con precios que ya incluían 50% de margen del instalador.
 // Para obtener el costo wholesale real hay que dividir por (1 + FORMULA_TRAINING_MARGIN).
