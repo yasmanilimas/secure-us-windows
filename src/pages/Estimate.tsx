@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, Plus, Trash2, ArrowRight, ArrowLeft, Home, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -69,6 +69,13 @@ const EstimateCalculatorContent = () => {
   const [screen, setScreen] = useState(false);
   const [autoPlay, setAutoPlay] = useState(true);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+
+  // Avanzar automáticamente a step 2 cuando se selecciona un producto en step 1
+  useEffect(() => {
+    if (selectedProduct && step === 1) {
+      setStep(2);
+    }
+  }, [selectedProduct]);
 
   // Get margin from pricing settings
   const marginPercentage = pricingSettings?.margin_percentage ?? 50;
